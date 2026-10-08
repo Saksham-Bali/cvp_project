@@ -1,0 +1,23 @@
+{
+  "scene": "Ujikintoki",
+  "n_laser": 3966751,
+  "n_eval_observed": 638190,
+  "observed_fraction": 0.8451067920795489,
+  "curvature_tertile_edges": [
+    0.010676765814423561,
+    0.046704786519209535
+  ],
+  "curvature_shares": [
+    212730,
+    212730,
+    212730
+  ],
+  "proximity_shares": [
+    73036,
+    54683,
+    510471
+  ],
+  "stability_spearman_r2_r4": 0.8711592385350556,
+  "stability_kappa_r2_r4": 0.6258026606487112,
+  "seconds": 91.30284905433655
+}

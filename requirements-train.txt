@@ -1,0 +1,13 @@
+# GPU training (Colab / Kaggle / HPC). PyTorch with CUDA must already be installed.
+gsplat==1.5.3
+ninja
+jaxtyping
+rich
+plyfile
+lpips
+scipy
+pillow
+matplotlib
+opencv-python
+huggingface_hub
+requests

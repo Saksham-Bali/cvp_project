@@ -1,0 +1,81 @@
+{
+  "scene": "Ujikintoki",
+  "conditions_present": [
+    "motion_mild",
+    "motion_strong",
+    "defocus_mild",
+    "defocus_strong"
+  ],
+  "n_train": 30,
+  "n_val_sharp_refs": 30,
+  "n_test": 5,
+  "image_size": [
+    1758,
+    1168
+  ],
+  "fx_fy_cx_cy": [
+    1421.5,
+    1423.68,
+    885.81,
+    570.88
+  ],
+  "principal_point_offset_px": [
+    6.81,
+    -13.12
+  ],
+  "fy_over_fx": 1.0015,
+  "colmap_to_metres_scale": 0.5324062917992166,
+  "n_sfm_points": 35314,
+  "note_splits": "train/ = blurred inputs, val/ = sharp references of the same views, test/ = sharp held-out",
+  "sharp_refs_identical_across_conditions": true,
+  "poses_identical_across_conditions": true,
+  "sharpness_var_laplacian_median": {
+    "sharp_ref": 403.0673771217747,
+    "motion_mild": 43.21671781185745,
+    "motion_strong": 17.60814404949025,
+    "defocus_mild": 3.1547717254187697,
+    "defocus_strong": 2.349842024289499
+  },
+  "sharpness_within_condition_cv": {
+    "sharp_ref": 0.10991437669052412,
+    "motion_mild": 0.21387982353358004,
+    "motion_strong": 0.3196303537556317,
+    "defocus_mild": 0.07172235500186862,
+    "defocus_strong": 0.029644220519279035
+  },
+  "blur_ratio_blurred_over_sharp": {
+    "motion_mild": {
+      "median": 0.11344222529861438,
+      "cv_across_views": 0.15547053832657495,
+      "min": 0.08957769333348597,
+      "max": 0.16071893079038965
+    },
+    "motion_strong": {
+      "median": 0.046678622941692005,
+      "cv_across_views": 0.27197409827135405,
+      "min": 0.030662734493925828,
+      "max": 0.09572556270242855
+    },
+    "defocus_mild": {
+      "median": 0.007944336949601092,
+      "cv_across_views": 0.14822628447349337,
+      "min": 0.007032970604885246,
+      "max": 0.012233200669474902
+    },
+    "defocus_strong": {
+      "median": 0.005941417354424168,
+      "cv_across_views": 0.12496405740224253,
+      "min": 0.005076047866792905,
+      "max": 0.008298700194990407
+    }
+  },
+  "json_sharpness_field_median": 53.86251866728919,
+  "json_sharpness_note": "transforms_*.json 'sharpness' is identical in every condition: it was computed on the sharp images (instant-ngp colmap2nerf: variance of Laplacian at full resolution), so it is NOT a blur measure",
+  "frame_check_median_abs_mm": 1.848262199667161,
+  "laser_points": "see laser_preview.png (laser points drawn from the same camera)",
+  "depth_m_p5_p50_p95": [
+    2.634999990463257,
+    4.242000102996826,
+    5.0970001220703125
+  ]
+}

@@ -1,0 +1,9 @@
+# CPU work on the laptop (data inspection, strata, geometry evaluation). No PyTorch needed.
+numpy
+scipy
+pillow
+matplotlib
+opencv-python
+plyfile
+huggingface_hub
+requests

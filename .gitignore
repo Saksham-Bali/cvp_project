@@ -1,0 +1,10 @@
+# Dataset and big files (too big for GitHub)
+data/
+runs/
+*.tar.gz
+*.part
+outputs/gt_cache/
+outputs/**/*.ply
+outputs/**/*.npz
+__pycache__/
+.ipynb_checkpoints/
