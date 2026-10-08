@@ -1,12 +1,89 @@
 # Mid-term: what is ready, and what to run (Thu 8 Oct → Fri 9 Oct, 10:00)
 
-Everything below was written and tested overnight on the real RealX3D files for the scene
-**Ujikintoki**. The results for that scene are **already computed** and sit in `outputs\Ujikintoki\`,
-so you can look at them before running anything.
+## ⏩ Afternoon update (Thu 8 Oct): read this first
 
-> Plan for the day:
-> - **Aditya** runs the GPU training on Colab or Kaggle (step 3). It takes ~1–2 h of mostly waiting.
-> - **Saksham** downloads the data, re-runs the CPU steps if he wants (step 2), and builds the slides from `outputs\`.
+### A. Round-1 Colab results: our 3DGS reproduces RealX3D (7,000 steps, T4, ~26 min each)
+
+| Ujikintoki, our gsplat 3DGS | PSNR train (vs sharp ref) | PSNR test | RealX3D published 3DGS (train / test) | #Gaussians | F@5cm native | F@5cm, published protocol |
+|---|---|---|---|---|---|---|
+| strong motion | 22.10 | 22.03 | 22.05 / 21.86 | 166k | 0.62 | 0.75 |
+| strong defocus | 23.03 | 22.98 | 23.03 / 22.97 | 59k | 0.67 | 0.76 |
+
+1. **Image quality matches RealX3D's published 3DGS to within 0.2 dB** (0.05 / 0.17 dB for motion; 0.00 / 0.01 dB for defocus). This is the "reproduce the baseline" goal, done.
+2. **The two geometry numbers measure different things.**
+   - *Native* is our metric depth scored as-is in the laser frame (with the alpha and depth-spread filter).
+   - *Published protocol* gives every view a 2-number fit to the laser depth and drops those filters, as we must do for RealX3D's own depth maps.
+   - For our runs the published protocol raises F by 0.09–0.13. How much it flatters the other methods is unknown, so we compare our runs with each other using the native numbers only.
+3. **Same PSNR, different geometry.** Under the same protocol, our 7k-step 3DGS scores F 0.75 / 0.76 while RealX3D's published 3DGS scores 0.56 / 0.56. Even our *native* (unfitted) F of 0.62 / 0.67 beats their fitted score.
+   - Their maps have 8–9 % of points far from any surface, ours 0.3 %.
+   - See `outputs\Ujikintoki\ours\fig_depth_ours_vs_published.png`: their depth map is streaky and noisy, ours is smooth.
+   - Candidate reasons, all hypotheses:
+     - longer training (probably 30k steps) adds needle-shaped Gaussians and floaters; round 2, cell 6 tests this;
+     - their depth is rendered differently;
+     - the original 3DGS code ignores the principal point (offset here by 6.8, −13.1 px). That gives slightly inconsistent rays (≈3–4 cm at 4 m) that hurt geometry more than PSNR. We have not checked which code RealX3D used.
+4. **Blurred inputs are fitted almost perfectly.** Our render vs the blurred input gives PSNR 35.5 (motion) and 41.6 (defocus). Vanilla 3DGS reproduces the blur rather than undoing it, as expected.
+
+Figures: `outputs\Ujikintoki\ours\fig_depth_ours_vs_published.png`, `outputs\Ujikintoki\compare_motion_strong_vanilla.png`, `compare_defocus_strong_vanilla.png` (our run next to the published methods) and `runs\Ujikintoki\*\vanilla\s0\previews\*.jpg` (blurred input | our render | sharp reference | our depth).
+
+### B. A second scene: Laboratory (published methods, scored on CPU this afternoon)
+
+F@5cm, published protocol. Rank (1 = best) is by PSNR / by geometry:
+
+| Method | Motion: Ujikintoki | Motion: Laboratory | Defocus: Ujikintoki | Defocus: Laboratory |
+|---|---|---|---|---|
+| 3DGS | 0.56 (2/3) | 0.39 (3/5) | 0.56 (4/4) | 0.40 (3/4) |
+| Deblurring-3DGS | **0.33** (5/5) | 0.51 (1/2) | 0.63 (1/1) | 0.42 (5/3), **PSNR 10.9**: training failed |
+| BAGS | 0.62 (3/2) | 0.50 (4/3) | 0.60 (2/2) | 0.47 (1/2) |
+| CoCoGaussian | **0.64 (1/1)** | **0.54 (2/1)** | 0.59 (3/3) | **0.48 (2/1)** |
+| Deblur-GS | 0.51 (4/4) | 0.39 (5/4) | 0.50 (5/5) | 0.39 (4/5) |
+
+What two scenes say (still preliminary: 2 of 8 scenes, no error bars):
+- **CoCoGaussian ranks 1st in geometry in 3 of 4 cases** (3rd in the fourth). The margins are small (e.g. 0.48 vs 0.47 on Laboratory-defocus).
+- **Deblurring-3DGS is the most scene-dependent.** It is the worst geometry on Ujikintoki-motion but 2nd on Laboratory-motion.
+  - Its released Laboratory-defocus images score PSNR 10.9 (they look ~30 % too bright, so possibly an export or colour problem; cause unknown). Our fitted F is a middling 0.42, but RealX3D's own `depth_L1` rates it worst. Treat this case as unreliable.
+- **PSNR rank and geometry rank mostly agree within one place** (ranks are among the 5 scored methods; BAD-Gaussians is excluded). Exceptions: 3DGS motion-Laboratory (3rd by PSNR, 5th by geometry) and Deblurring-3DGS defocus-Laboratory (5th / 3rd).
+- **Structure types:** among the proximity strata, **"open"** (no other surface within 20 cm) scores below both "tight" and "near" in all 20 method × condition × scene cases. On Ujikintoki these are mostly floor and walls; on Laboratory that is not checked yet. Curvature differences are smaller on Laboratory than on Ujikintoki (low vs high differ by 0.01–0.08).
+- **Release issues hold on Laboratory too:** BAD-Gaussians' depth is identical across the two Laboratory conditions downloaded, and BAGS again uses ray distance.
+- **Laboratory numbers are less trustworthy than Ujikintoki's:** the per-view fit error is 12–31 cm (vs 6–14 cm) and 12–29 % of points are far from any surface (vs 7–19 %).
+- **Harness checks pass on Laboratory too:** frame 2.3 mm, laser depth through the pipeline F@5 0.989.
+
+Files: `outputs\Laboratory\…` (same layout as Ujikintoki) and `outputs\compare_scenes\table.csv`, `fig_scenes_motion_strong.png`, `fig_scenes_defocus_strong.png`.
+
+### C. What to run now: round 2 on Colab (Aditya, ~1.5 h, plus 2 h optional)
+
+This gives the one result the mid-term still lacks: **how much does blur damage each structure type, compared with sharp input?**
+
+1. **Push the new code** from `D:\cvp_project`:
+   ```
+   git add .
+   git commit -m "Round 2: batch runner, summaries, second scene"
+   git push
+   ```
+2. **Open the notebook.** In Colab: File → Open notebook → GitHub → `Saksham-Bali/cvp_project` → **`notebooks/midterm_round2.ipynb`**. Then Runtime → Change runtime type → **T4 GPU**.
+3. **Run cells 1–5** in order.
+   - **Cell 2** asks for Google Drive access: allow it. Finished runs are copied to `MyDrive/cvp_runs`.
+   - **Cell 5** trains and scores three runs back to back, 7,000 steps each, about 35–40 min each (~2 h total):
+     - sharp control: the same 30 views, but with the sharp images as input;
+     - mild motion;
+     - mild defocus.
+   - If Colab disconnects, re-run cells 1–5; runs already on Drive are skipped.
+4. **Optional cell 6:** strong motion at 30,000 steps (~2.5 h), which tests the first explanation in A3. Better on Kaggle *in parallel*: import the same notebook there (Accelerator GPU T4 ×1, Internet On), run cells 1–4, then cell 6.
+5. **Run cells 7–8.** They show the figures and download `cvp_results_round2.zip`.
+6. **On the laptop:**
+   - Extract the zip into `D:\cvp_project`. Its `runs\` folder merges with the round-1 runs, which are already there.
+   - Then run:
+     ```
+     cd D:\cvp_project
+     pip install numpy matplotlib
+     python scripts\summarize_runs.py --scene Ujikintoki
+     ```
+     This needs only the small JSON files and takes seconds.
+   - It writes `outputs\Ujikintoki\ours\`:
+     - `fig_blur_damage.png`: F@5 per structure type for sharp vs mild vs strong input, motion and defocus;
+     - `fig_delta_vs_sharp.png`: the damage, F(blurred) − F(sharp), per structure type;
+     - `runs_table.csv`: every run's PSNR, #Gaussians and F-scores.
+
+   These two figures are the Stage-1 slide: they separate "hard anyway" (low even with sharp input) from "damaged by blur".
 
 ---
 
@@ -80,7 +157,7 @@ python scripts\run_midterm_cpu.py --data data --scene Ujikintoki
 - *Out of memory:* add `--downscale 2` to the training command (half resolution). The PSNR is then not comparable to RealX3D, so say so.
 - *Nothing works by Thursday evening:* present the published-methods results from step 1. They are a complete Goal 3 result without our own training.
 
-## 4. Results from tonight (scene Ujikintoki, single scene, preliminary)
+## 4. Results from the night (scene Ujikintoki; see the afternoon update at the top for round-1 training and the second scene)
 
 All numbers were re-checked after an **independent review** (section 6), which found and fixed two bugs.
 

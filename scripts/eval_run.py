@@ -55,12 +55,17 @@ def main():
     if not depth:
         sys.exit("No depth files found in the run folder (was it trained with --no-depth?)")
     res, _ = evaluate_depth_maps(sc, gt, depth, mask, stride=a.stride)
+    if "overall" not in res:
+        save_json(res, os.path.join(a.run, "geometry_error.json"))
+        sys.exit(f"Geometry evaluation impossible: {res.get('error')} (training too short or diverged?)")
     res["photometric"] = {k: meta.get(k) for k in ("train_vs_sharp_ref", "test")}
     # Same protocol as for RealX3D's published depth (min-max normalise each view, 2-parameter fit to
     # the laser depth, no alpha/std masks) so that the comparison with published methods is fair.
     print("scoring again with the published-depth protocol (for the comparison figure) ...")
     aligned, _ = align_views(sc, {n: normalise_like_published(v) for n, v in raw.items()}, encoding="z")
     res_pub, _ = evaluate_depth_maps(sc, gt, aligned, stride=a.stride)
+    if "overall" not in res_pub:
+        res_pub = None
     res["published_protocol"] = res_pub
     res["filter"] = {"alpha": 0.5, "max_rel_std": a.max_rel_std}
     save_json(res, os.path.join(a.run, "geometry.json"))
@@ -74,18 +79,19 @@ def main():
           f"(P {o['P@5cm']:.3f}, R {o['R@5cm']:.3f}); acc median {o['acc_median_cm']:.1f} cm")
     for ax, d in st.items():
         print(f"   {ax:10s} " + "  ".join(f"{k}: {v['F@5cm']:.3f}" for k, v in d.items()))
-    print(f"  published-protocol F@5cm overall {res_pub['overall']['F@5cm']:.3f} "
-          f"(use this one when comparing with RealX3D's published methods)")
+    if res_pub:
+        print(f"  published-protocol F@5cm overall {res_pub['overall']['F@5cm']:.3f} "
+              f"(use this one when comparing with RealX3D's published methods)")
 
     pub = os.path.join(a.out, cfg["scene"], "published", "results.json")
-    if os.path.exists(pub):
+    if os.path.exists(pub) and res_pub:
         with open(pub) as f:
             allres = json.load(f)
         if cfg["condition"] in allres:
             sys.path.insert(0, os.path.dirname(__file__))
             from eval_published import bar_figure
             merged = dict(allres[cfg["condition"]])
-            merged[f"ours: gsplat {cfg['tag']}"] = res_pub
+            merged[f"ours: gsplat {cfg['tag']} ({cfg['steps'] // 1000}k steps)"] = res_pub
             path = os.path.join(a.out, cfg["scene"], f"compare_{cfg['condition']}_{cfg['tag']}.png")
             bar_figure(merged, cfg["condition"], path)
             print(f"comparison figure: {path}")

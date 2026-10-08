@@ -1,0 +1,23 @@
+{
+  "scene": "Laboratory",
+  "n_laser": 6171085,
+  "n_eval_observed": 902095,
+  "observed_fraction": 0.7073601620954475,
+  "curvature_tertile_edges": [
+    0.021709751337766647,
+    0.08027663081884384
+  ],
+  "curvature_shares": [
+    300698,
+    300696,
+    300701
+  ],
+  "proximity_shares": [
+    162746,
+    125922,
+    613427
+  ],
+  "stability_spearman_r2_r4": 0.8459985536446617,
+  "stability_kappa_r2_r4": 0.5631701760871095,
+  "seconds": 157.13533997535706
+}

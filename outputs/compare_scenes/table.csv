@@ -1,0 +1,11 @@
+condition,method,F5_overall|Ujikintoki,F5_overall|Laboratory,F5_overall|mean,F5_curv_low|Ujikintoki,F5_curv_low|Laboratory,F5_curv_low|mean,F5_curv_high|Ujikintoki,F5_curv_high|Laboratory,F5_curv_high|mean,F5_prox_tight|Ujikintoki,F5_prox_tight|Laboratory,F5_prox_tight|mean,F5_prox_open|Ujikintoki,F5_prox_open|Laboratory,F5_prox_open|mean,PSNR_train|Ujikintoki,PSNR_train|Laboratory,PSNR_train|mean,rank_PSNR|Ujikintoki,rank_F5|Ujikintoki,rank_PSNR|Laboratory,rank_F5|Laboratory
+defocus_strong,3DGS,0.556,0.403,0.48,0.503,0.462,0.483,0.631,0.512,0.572,0.682,0.554,0.618,0.563,0.442,0.502,23.03,19.761,21.395,4,4,3,4
+defocus_strong,Deblurring-3DGS,0.634,0.422,0.528,0.564,0.55,0.557,0.722,0.476,0.599,0.749,0.523,0.636,0.644,0.485,0.564,23.231,10.878,17.055,1,1,5,3
+defocus_strong,BAGS,0.597,0.472,0.534,0.544,0.505,0.525,0.719,0.589,0.654,0.795,0.642,0.718,0.601,0.496,0.548,23.165,20.492,21.828,2,2,1,2
+defocus_strong,CoCoGaussian,0.588,0.482,0.535,0.553,0.499,0.526,0.689,0.569,0.629,0.712,0.616,0.664,0.604,0.479,0.541,23.04,20.115,21.577,3,3,2,1
+defocus_strong,Deblur-GS,0.498,0.386,0.442,0.492,0.452,0.472,0.625,0.518,0.571,0.668,0.564,0.616,0.539,0.421,0.48,20.71,17.306,19.008,5,5,4,5
+motion_strong,3DGS,0.562,0.387,0.474,0.513,0.458,0.485,0.629,0.502,0.566,0.673,0.549,0.611,0.567,0.431,0.499,22.045,19.163,20.604,2,3,3,5
+motion_strong,Deblurring-3DGS,0.325,0.51,0.418,0.457,0.562,0.509,0.457,0.588,0.522,0.513,0.618,0.565,0.459,0.546,0.503,20.479,20.783,20.631,5,5,1,2
+motion_strong,BAGS,0.617,0.497,0.557,0.558,0.538,0.548,0.717,0.57,0.644,0.786,0.633,0.71,0.613,0.499,0.556,20.785,17.429,19.107,3,2,4,3
+motion_strong,CoCoGaussian,0.638,0.536,0.587,0.586,0.573,0.579,0.729,0.584,0.657,0.769,0.64,0.704,0.637,0.54,0.589,22.519,19.782,21.15,1,1,2,1
+motion_strong,Deblur-GS,0.511,0.394,0.453,0.492,0.462,0.477,0.609,0.518,0.564,0.668,0.57,0.619,0.536,0.434,0.485,20.541,16.906,18.724,4,4,5,4

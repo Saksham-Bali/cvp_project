@@ -32,7 +32,11 @@ scripts/
   train_gsplat.py        train 3DGS on one scene/condition (GPU)
   eval_run.py            score one of our trained runs
   gsplat_smoke.py        check gsplat compiles/runs on this GPU
-notebooks/midterm_train_colab_kaggle.ipynb   GPU training on Colab/Kaggle, start to finish
+  run_batch.py           train + score several runs back to back (Colab/Kaggle), resumable
+  summarize_runs.py      table + blur-damage figures of our runs (sharp vs mild vs strong)
+  compare_scenes.py      published-methods geometry across scenes
+notebooks/midterm_train_colab_kaggle.ipynb   round 1: strong motion + strong defocus on Colab/Kaggle
+notebooks/midterm_round2.ipynb               round 2: sharp control + mild settings (+ optional 30k run)
 tests/test_strata.py     unit tests for the strata (python -m pytest tests -q)
 docs/                    plan, proposal, slides, reference paper
 data/  outputs/  runs/   (not in git) dataset, figures/metrics, training runs
